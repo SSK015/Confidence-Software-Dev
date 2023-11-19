@@ -1,12 +1,25 @@
 #pragma once
 
-namespace PriceCal
+enum class DiscountType
 {
-enum class DiscountType{CASS_NORMAL, PERCENTOFF, CASH_BACK};
+    CASH_NORMAL,
+    CASH_PERCENTOFF_10,
+    CASH_PERCENTOFF_20,
+    CASH_PERCENTOFF_30,
+    CASH_BACK,
+};
 
-class PriceCalculator final
+namespace PriceCalc
 {
-public:
-    double AcceptCash(const DiscountType type, const double money) const noexcept;
-};
-};
+    class PriceCalculator final
+    {
+    public:
+        double AcceptCash(const DiscountType discountType, const double money) const noexcept;
+
+    private:
+        double Normal(const double money) const noexcept
+        {
+            return money;
+        };
+    };
+} // namespace PriceCalc
