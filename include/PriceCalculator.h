@@ -21,5 +21,11 @@ namespace PriceCalc
         {
             return money;
         };
+
+        double PercentOff(const double money) const noexcept
+        {
+            const double discountRate = 0.9;
+            return money * discountRate;
+        };
     };
 } // namespace PriceCalc

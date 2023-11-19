@@ -18,9 +18,10 @@ namespace PriceCalc
 
         case DiscountType::CASH_PERCENTOFF_10:
         {
-            const double discountRate = 0.9;
+            // const double discountRate = 0.9;
 
-            cash = money * discountRate;
+            // cash = money * discountRate;
+            cash = PercentOff(money);
             break;
         }
 
