@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cmath>
+#include <memory>
+
 enum class DiscountType
 {
     CASH_NORMAL,
@@ -17,15 +20,35 @@ namespace PriceCalc
         double AcceptCash(const DiscountType discountType, const double money) const noexcept;
 
     private:
-        double Normal(const double money) const noexcept
+        class Normal final
         {
-            return money;
+        public:
+            double AcceptCash(const double money) const noexcept
+            {
+                return money;
+            };
         };
-
-        double PercentOff(const double money) const noexcept
+        class PercentOff final
         {
-            const double discountRate = 0.9;
-            return money * discountRate;
+        public:
+            double AcceptCash(const double money) const noexcept
+            {
+                const double discountRate = 0.9;
+                return money * discountRate;
+            };
+        };
+        class CashBack final
+        {
+        public:
+            double AcceptCash(const double money) const noexcept
+            {
+                const double threshold = 100.0;
+                const double cashback = 20.0;
+
+                double cash = money - std::floor(money / threshold) * cashback;
+                // break;
+                return cash;
+            };
         };
     };
 } // namespace PriceCalc

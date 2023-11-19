@@ -12,16 +12,16 @@ namespace PriceCalc
         {
         case DiscountType::CASH_NORMAL:
         {
-            cash = Normal(money);
+            std::unique_ptr<Normal> normal = std::make_unique<Normal>();
+            cash = normal->AcceptCash(money);
             break;
         }
 
         case DiscountType::CASH_PERCENTOFF_10:
         {
-            // const double discountRate = 0.9;
-
-            // cash = money * discountRate;
-            cash = PercentOff(money);
+            std::unique_ptr<PercentOff> percentOff = std::make_unique<PercentOff>();
+            cash = percentOff->AcceptCash(money);
+            // cash = PercentOff(money);
             break;
         }
 
@@ -43,11 +43,8 @@ namespace PriceCalc
 
         case DiscountType::CASH_BACK:
         {
-            const double threshold = 100.0;
-            const double cashback = 20.0;
-
-            cash = money - std::floor(money / threshold) * cashback;
-
+            std::unique_ptr<CashBack> cashBack = std::make_unique<CashBack>();
+            cash = cashBack->AcceptCash(money);
             break;
         }
         }
