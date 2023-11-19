@@ -20,27 +20,39 @@ namespace PriceCalc
         double AcceptCash(const DiscountType discountType, const double money) const noexcept;
 
     private:
-        class Normal final
+        class Discount
         {
         public:
-            double AcceptCash(const double money) const noexcept
+            virtual double AcceptCash(const double money) const noexcept = 0;
+            virtual ~Discount() = default;
+        };
+        class Normal final : public Discount
+        {
+        public:
+            double AcceptCash(const double money) const noexcept override
             {
                 return money;
             };
         };
-        class PercentOff final
+        class PercentOff final : public Discount
         {
         public:
-            double AcceptCash(const double money) const noexcept
+            explicit PercentOff(const double rate) : rate(rate)
             {
-                const double discountRate = 0.9;
-                return money * discountRate;
+            }
+            double AcceptCash(const double money) const noexcept override
+            {
+                // const double discountRate = 0.9;
+                return money * rate;
             };
+
+        private:
+            double rate;
         };
-        class CashBack final
+        class CashBack final : public Discount
         {
         public:
-            double AcceptCash(const double money) const noexcept
+            double AcceptCash(const double money) const noexcept override
             {
                 const double threshold = 100.0;
                 const double cashback = 20.0;

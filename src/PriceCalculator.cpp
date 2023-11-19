@@ -8,47 +8,47 @@ namespace PriceCalc
     {
         double cash = 0.0;
 
+        std::unique_ptr<Discount> discount;
+
         switch (discountType)
         {
         case DiscountType::CASH_NORMAL:
         {
-            std::unique_ptr<Normal> normal = std::make_unique<Normal>();
-            cash = normal->AcceptCash(money);
+            discount = std::make_unique<Normal>();
+            // cash = discount->AcceptCash(money);
             break;
         }
 
         case DiscountType::CASH_PERCENTOFF_10:
         {
-            std::unique_ptr<PercentOff> percentOff = std::make_unique<PercentOff>();
-            cash = percentOff->AcceptCash(money);
+            discount = std::make_unique<PercentOff>(0.9);
+            // cash = discount->AcceptCash(money);
             // cash = PercentOff(money);
             break;
         }
 
         case DiscountType::CASH_PERCENTOFF_20:
         {
-            const double discountRate = 0.8;
-
-            cash = money * discountRate;
+            discount = std::make_unique<PercentOff>(0.8);
+            // cash = discount->AcceptCash(money);
             break;
         }
 
         case DiscountType::CASH_PERCENTOFF_30:
         {
-            const double discountRate = 0.7;
-
-            cash = money * discountRate;
+            discount = std::make_unique<PercentOff>(0.7);
+            // cash = discount->AcceptCash(money);
             break;
         }
 
         case DiscountType::CASH_BACK:
         {
-            std::unique_ptr<CashBack> cashBack = std::make_unique<CashBack>();
-            cash = cashBack->AcceptCash(money);
+            discount = std::make_unique<CashBack>();
+            // cash = discount->AcceptCash(money);
             break;
         }
         }
-
+        cash = discount->AcceptCash(money);
         return cash;
     }
 } // namespace PriceCalc
