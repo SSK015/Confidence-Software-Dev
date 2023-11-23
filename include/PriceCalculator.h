@@ -4,6 +4,7 @@
 #include <memory>
 #include <functional>
 #include <iostream>
+
 enum class DiscountType
 {
     CASH_NORMAL,
@@ -15,39 +16,40 @@ enum class DiscountType
 
 namespace PriceCalc
 {
-    class Discount
+    class IDiscountStrategy
     {
     public:
-        virtual double AcceptCash(const double money) const noexcept = 0;
-        virtual ~Discount() = default;
+        virtual double AcceptCash(const double money) const = 0;
+        virtual ~IDiscountStrategy() = default;
     };
 
-    class Normal final : public Discount
+    class NormalStrategy final : public IDiscountStrategy
     {
     public:
-        static Normal &getInstance()
+        static NormalStrategy &getInstance()
         {
-            static Normal instance;
+            static NormalStrategy instance;
             return instance;
         }
-        double AcceptCash(const double money) const noexcept override
+
+        double AcceptCash(const double money) const override
         {
             return money;
         }
 
     private:
-        Normal()
+        NormalStrategy()
         {
-            std::cout << "Construct Function of Normal" << std::endl;
-        }
+            std::cout << "Construct Function of Normal!" << std::endl;
+        };
     };
 
-    class PercentOff final : public Discount
+    class PercentOffStrategy final : public IDiscountStrategy
     {
     public:
-        static PercentOff &getInstance()
+        static PercentOffStrategy &getInstance()
         {
-            static PercentOff instance;
+            static PercentOffStrategy instance;
             return instance;
         }
 
@@ -56,28 +58,29 @@ namespace PriceCalc
             rate = newRate;
         }
 
-        double AcceptCash(const double money) const noexcept override
+        double AcceptCash(const double money) const override
         {
             return money * rate;
         }
 
     private:
         double rate;
-        PercentOff() : rate(1.0)
+        PercentOffStrategy() : rate(1.0)
         {
-            std::cout << "Construct Function of PercentOff" << std::endl;
+            std::cout << "Construct Function of PercentOff!" << std::endl;
         }
     };
 
-    class CashBack final : public Discount
+    class CashBackStrategy final : public IDiscountStrategy
     {
     public:
-        static CashBack &getInstance()
+        static CashBackStrategy &getInstance()
         {
-            static CashBack instance;
+            static CashBackStrategy instance;
             return instance;
         }
-        double AcceptCash(const double money) const noexcept override
+
+        double AcceptCash(const double money) const override
         {
             const double threshold = 100.0;
             const double cashback = 20.0;
@@ -85,38 +88,44 @@ namespace PriceCalc
         }
 
     private:
-        CashBack()
+        CashBackStrategy()
         {
             std::cout << "Construct Function of CashBack" << std::endl;
-        }
+        };
     };
 
     class PriceCalculator final
     {
     public:
-        double AcceptCash(const DiscountType discountType, const double money) const noexcept
+        double AcceptCash(const DiscountType discountType, const double money) const
         {
+            const IDiscountStrategy *strategy;
             switch (discountType)
             {
             case DiscountType::CASH_NORMAL:
-                return Normal::getInstance().AcceptCash(money);
+                strategy = &NormalStrategy::getInstance();
+                break;
             case DiscountType::CASH_PERCENTOFF_10:
-                PercentOff::getInstance().setRate(0.9);
-                return PercentOff::getInstance().AcceptCash(money);
+                PercentOffStrategy::getInstance().setRate(0.9);
+                strategy = &PercentOffStrategy::getInstance();
+                break;
             case DiscountType::CASH_PERCENTOFF_20:
-                PercentOff::getInstance().setRate(0.8);
-                return PercentOff::getInstance().AcceptCash(money);
+                PercentOffStrategy::getInstance().setRate(0.8);
+                strategy = &PercentOffStrategy::getInstance();
+                break;
             case DiscountType::CASH_PERCENTOFF_30:
-                PercentOff::getInstance().setRate(0.7);
-                return PercentOff::getInstance().AcceptCash(money);
+                PercentOffStrategy::getInstance().setRate(0.7);
+                strategy = &PercentOffStrategy::getInstance();
+                break;
             case DiscountType::CASH_BACK:
-                return CashBack::getInstance().AcceptCash(money);
+                strategy = &CashBackStrategy::getInstance();
+                break;
             default:
-                return Normal::getInstance().AcceptCash(money);
+                strategy = &NormalStrategy::getInstance();
+                break;
             }
-        }
-        PriceCalculator()
-        {
+
+            return strategy->AcceptCash(money);
         }
     };
-} // namespace PriceCalc
+}
