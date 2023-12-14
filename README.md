@@ -1,4 +1,6 @@
-完成内容：
+## Score：97/100pts, Distinguished Student(Top 10) in the course.
+
+完成内容（要求全部实现）：
 
 ### 类解耦
 
